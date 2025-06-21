@@ -1,0 +1,311 @@
+{
+  "move": {
+    "action_points": 1,
+    "description": "Move to an adjacent tile",
+    "directions": [
+      "up",
+      "up left",
+      "left",
+      "down left",
+      "down",
+      "down right",
+      "right",
+      "up right"
+    ],
+    "range": 1,
+    "requires": [
+      "action_points"
+    ]
+  },
+  "attack": {
+    "action_points": 1,
+    "description": "Strike an adjacent enemy with melee weapon",
+    "range": 1,
+    "target": "enemy",
+    "damage": "base_attack",
+    "requires": [
+      "action_points"
+    ]
+  },
+  "charge": {
+    "action_points": 2,
+    "description": "Move up to 2 tiles and attack with +1 damage",
+    "range": 2,
+    "target": "enemy",
+    "damage": "base_attack + 1",
+    "movement": true,
+    "requires": [
+      "action_points >= 2",
+      "clear_path"
+    ]
+  },
+  "shoot": {
+    "action_points": 1,
+    "description": "Fire projectile at distant enemy",
+    "range": 3,
+    "target": "enemy",
+    "damage": "base_attack",
+    "requires": [
+      "has_ranged_weapon",
+      "line_of_sight",
+      "ammunition > 0"
+    ],
+    "items": [
+      "shortbow",
+      "crossbow",
+      "arbalest"
+    ]
+  },
+  "defend": {
+    "action_points": 1,
+    "description": "Raise shield, +2 defense until next turn",
+    "effect": "defense_bonus +2",
+    "duration": "until_next_turn",
+    "requires": [
+      "has_shield"
+    ],
+    "self_target": true
+  },
+  "guard": {
+    "action_points": 1,
+    "description": "Protect adjacent ally, intercept attacks",
+    "range": 1,
+    "target": "ally",
+    "effect": "redirect_attacks",
+    "duration": "until_next_turn",
+    "requires": [
+      "adjacent_ally"
+    ]
+  },
+  "rally": {
+    "action_points": 2,
+    "description": "Inspire nearby allies, remove fear effects",
+    "range": 2,
+    "target": "allies_in_range",
+    "effect": "remove_debuffs",
+    "requires": [
+      "leadership > 0"
+    ]
+  },
+  "heal": {
+    "action_points": 2,
+    "description": "Restore health to wounded ally",
+    "range": 1,
+    "target": "ally",
+    "healing": "1d4 + wisdom_modifier",
+    "requires": [
+      "healing_supplies > 0"
+    ],
+    "items": [
+      "book_of_healing"
+    ]
+  },
+  "cast_spell": {
+    "action_points": 3,
+    "description": "Invoke magical arts",
+    "range": "varies_by_spell",
+    "target": "varies_by_spell",
+    "requires": [
+      "mana_points > 0",
+      "spell_known"
+    ],
+    "class_restriction": [
+      "mage",
+      "sorcerer",
+      "warlock"
+    ],
+    "subtypes": {
+      "fireball": {
+        "range": 4,
+        "damage": "2d6",
+        "area": "3x3",
+        "action_points": 3
+      },
+      "lightning": {
+        "range": 5,
+        "damage": "1d8",
+        "target": "line",
+        "action_points": 2
+      },
+      "shield": {
+        "range": 0,
+        "effect": "+3_defense",
+        "duration": "3_turns",
+        "action_points": 2
+      }
+    }
+  },
+  "throw": {
+    "action_points": 1,
+    "description": "Hurl object at enemy",
+    "range": 2,
+    "target": "enemy_or_tile",
+    "damage": "1 + strength_modifier",
+    "requires": [
+      "throwable_item"
+    ],
+    "items": [
+      "rock",
+      "dagger",
+      "javelin"
+    ]
+  },
+  "backstab": {
+    "action_points": 2,
+    "description": "Sneak attack from behind for double damage",
+    "range": 1,
+    "target": "enemy",
+    "damage": "base_attack * 2",
+    "requires": [
+      "behind_target",
+      "stealth_active"
+    ],
+    "class_restriction": [
+      "rogue",
+      "assassin"
+    ]
+  },
+  "stealth": {
+    "action_points": 1,
+    "description": "Become hidden until next attack or 3 turns",
+    "effect": "invisible_to_enemies",
+    "duration": "until_attack_or_3_turns",
+    "requires": [
+      "not_in_combat",
+      "cover_available"
+    ]
+  },
+  "shout": {
+    "action_points": 1,
+    "description": "Battle cry that intimidates nearby enemies",
+    "range": 2,
+    "target": "enemies_in_range",
+    "effect": "fear_1_turn",
+    "requires": [
+      "charisma > 12"
+    ],
+    "class_restriction": [
+      "barbarian",
+      "berserker"
+    ]
+  },
+  "parry": {
+    "action_points": 0,
+    "description": "Reactive defense against incoming attack",
+    "trigger": "being_attacked",
+    "effect": "negate_attack_50_percent",
+    "requires": [
+      "has_melee_weapon",
+      "not_surprised"
+    ],
+    "reaction": true
+  },
+  "overwatch": {
+    "action_points": 2,
+    "description": "Prepare to attack any enemy that enters range",
+    "effect": "attack_on_enemy_movement",
+    "duration": "until_next_turn",
+    "requires": [
+      "has_ranged_weapon",
+      "ammunition > 0"
+    ],
+    "class_restriction": [
+      "archer",
+      "crossbowman"
+    ]
+  },
+  "fortify": {
+    "action_points": 2,
+    "description": "Dig in, +1 defense but cannot move",
+    "effect": "defense_bonus +1, movement_locked",
+    "duration": "until_moved",
+    "requires": [
+      "on_ground",
+      "has_shovel_or_time"
+    ]
+  },
+  "intimidate": {
+    "action_points": 1,
+    "description": "Cause enemy to lose their next action",
+    "range": 1,
+    "target": "enemy",
+    "effect": "skip_next_turn",
+    "requires": [
+      "charisma_check_vs_willpower"
+    ],
+    "class_restriction": [
+      "barbarian",
+      "knight"
+    ]
+  },
+  "disarm": {
+    "action_points": 2,
+    "description": "Knock weapon from enemy's grasp",
+    "range": 1,
+    "target": "enemy",
+    "effect": "remove_weapon_3_turns",
+    "requires": [
+      "skill_check_vs_dexterity"
+    ],
+    "class_restriction": [
+      "rogue",
+      "monk"
+    ]
+  },
+  "blessing_invoke": {
+    "action_points": "varies",
+    "description": "Call upon planetary sphere for divine aid",
+    "requires": [
+      "sphere_charges > 0",
+      "not_cursed"
+    ],
+    "spheres": {
+      "sol": {
+        "action_points": 1,
+        "effect": "allies_adjacent_+1_attack"
+      },
+      "luna": {
+        "action_points": 1,
+        "effect": "move_through_enemies_once"
+      },
+      "mercury": {
+        "action_points": 1,
+        "effect": "one_unit_+2_movement"
+      },
+      "venus": {
+        "action_points": 1,
+        "effect": "heal_1hp_all_allies"
+      },
+      "mars": {
+        "action_points": 2,
+        "effect": "next_attack_double_damage"
+      },
+      "jupiter": {
+        "action_points": 3,
+        "effect": "extra_action_this_turn"
+      },
+      "saturn": {
+        "action_points": 2,
+        "effect": "all_units_immovable_1_round"
+      }
+    }
+  },
+  "wait": {
+    "action_points": 0,
+    "description": "Hold action, act later in turn order",
+    "effect": "delay_turn",
+    "requires": [
+      "none"
+    ]
+  },
+  "retreat": {
+    "action_points": 1,
+    "description": "Move away from enemies without provoking attacks",
+    "range": 1,
+    "effect": "safe_movement_away",
+    "requires": [
+      "action_points > 0",
+      "not_surrounded"
+    ]
+  }
+}
